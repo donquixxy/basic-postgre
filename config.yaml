@@ -1,0 +1,12 @@
+application:
+  name: basic-postgres
+  server: development
+database:
+  driver: postgres
+  username: agusari
+  password: 12345678
+  port: 32768
+  address: 127.0.0.1
+  firstdb: user
+  schemas: public
+  sslmode: verify-full
