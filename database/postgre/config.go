@@ -18,8 +18,9 @@ type PostgreConfig struct {
 	SSLMode      string
 }
 
-func InitPostgreDb(config PostgreConfig) (*gorm.DB, error) {
-	dsn := fmt.Sprintf("host=%v user=agusari password=12345678 sslmode=disable", config.Address)
+func InitPostgreDb() (*gorm.DB, error) {
+	dsn := "host=localhost user=agusari password=12345678 dbname=postgres port=32768 sslmode=disable TimeZone=Asia/Shanghai"
+	fmt.Println(dsn)
 	database, er := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if er != nil {
