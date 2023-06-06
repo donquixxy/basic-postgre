@@ -37,6 +37,14 @@ func GetReturnData(er error, c echo.Context, data interface{}, errMsg []string) 
 				respons.StatusCode = 409
 				return c.JSON(respons.StatusCode, respons)
 			}
+		case *exception.RecordNotFoundError:
+			{
+				respons.Message = "Record Not Found"
+				respons.ErrMsg = errMsg
+				respons.ErrMsg = append(respons.ErrMsg, er.Error())
+				respons.StatusCode = 404
+				return c.JSON(respons.StatusCode, respons)
+			}
 		default:
 			{
 				respons.StatusCode = 503

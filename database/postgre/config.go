@@ -44,3 +44,19 @@ func InitPostgreDb() (*gorm.DB, error) {
 
 	return database, nil
 }
+
+func ClosePostgreConnection(db *gorm.DB) {
+	database, errDb := db.DB()
+
+	if errDb != nil {
+		panic("error connecting to database in order to close connection")
+	}
+
+	errClose := database.Close()
+
+	if errClose != nil {
+		panic(errClose.Error())
+	}
+
+	fmt.Println("Success to close connection Postgres database")
+}

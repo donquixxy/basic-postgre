@@ -15,3 +15,11 @@ type BadRequestError struct {
 func (b *BadRequestError) Error() string {
 	return b.Message
 }
+
+type RecordNotFoundError struct {
+	Message string
+}
+
+func (b *RecordNotFoundError) Error() string {
+	return b.Message
+}
