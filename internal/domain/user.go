@@ -13,6 +13,7 @@ type User struct {
 	IDCompany string    `json:"id_company" gorm:"column:id_company"`
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"`
+	Company   Company   `json:"company" gorm:"foreignKey:ID;references:IDCompany"`
 }
 
 func (*User) TableName() string {

@@ -18,9 +18,11 @@ type PostgreConfig struct {
 	SSLMode      string
 }
 
-func InitPostgreDb() (*gorm.DB, error) {
-	dsn := "host=localhost user=agusari password=12345678 dbname=postgres port=32768 sslmode=disable TimeZone=Asia/Shanghai"
-	fmt.Println(dsn)
+func InitPostgreDb(config PostgreConfig) (*gorm.DB, error) {
+	// dsn := "host=localhost user=agusari password=12345678 dbname=postgres port=32768 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai",
+		config.Address, config.Username, config.Password, config.DatabaseName, config.Port,
+	)
 	database, er := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if er != nil {

@@ -39,7 +39,8 @@ func (*UserRepositoryImpl) FindByName(db *gorm.DB, name string) (*domain.User, e
 func (*UserRepositoryImpl) FindAll(db *gorm.DB) []*domain.User {
 	var ent []*domain.User
 
-	db.Find(&ent)
+	db.Preload("Company").
+		Find(&ent)
 
 	return ent
 }
@@ -56,7 +57,8 @@ func (*UserRepositoryImpl) Update(db *gorm.DB, newValue *domain.User) error {
 func (*UserRepositoryImpl) FindByID(db *gorm.DB, id string) (*domain.User, error) {
 	user := &domain.User{}
 
-	res := db.Where("id = ?", id).First(&user)
+	res := db.Where("id = ?", id).Preload("Company").
+		First(&user)
 
 	return user, res.Error
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"postgre-basic/config"
 	"postgre-basic/database/postgre"
 	"postgre-basic/internal/domain"
 	"testing"
@@ -9,7 +10,8 @@ import (
 )
 
 func TestUserGetByID(t *testing.T) {
-	db, err := postgre.InitPostgreDb()
+	appConfig := config.GetConfig()
+	db, err := postgre.InitPostgreDb(*appConfig.Database)
 	assert.NoError(t, err)
 
 	database, er := db.DB()
@@ -31,7 +33,8 @@ func TestUserGetByID(t *testing.T) {
 }
 
 func TestGetAllUsers(t *testing.T) {
-	db, err := postgre.InitPostgreDb()
+	appConfig := config.GetConfig()
+	db, err := postgre.InitPostgreDb(*appConfig.Database)
 	assert.NoError(t, err)
 
 	database, er := db.DB()
