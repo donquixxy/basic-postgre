@@ -1,8 +1,8 @@
 package responses
 
 type Response struct {
-	StatusCode int         `json:"status_code"`
-	Error      string      `json:"error"`
+	StatusCode int         `json:"code"`
+	Message    string      `json:"message"`
 	ErrMsg     []string    `json:"errmsg"`
 	Data       interface{} `json:"data"`
 }

@@ -8,8 +8,8 @@ import (
 )
 
 type CreateRequest struct {
-	Name string `json:"name" form:"name"`
-	Age  int    `json:"age" form:"age"`
+	Name string `json:"name" form:"name" validate:"required"`
+	Age  int    `json:"age" form:"age" validate:"required"`
 }
 
 func ReadCreateRequest(c echo.Context) (*CreateRequest, error) {

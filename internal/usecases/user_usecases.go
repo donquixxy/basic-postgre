@@ -12,7 +12,7 @@ import (
 )
 
 type UserServices interface {
-	CreateUser(request *userrequest.CreateRequest) error
+	CreateUser(request *userrequest.CreateRequest) (*domain.User, error)
 }
 
 type UserServicesImpl struct {
@@ -30,13 +30,14 @@ func NewUserServices(
 	}
 }
 
-func (this *UserServicesImpl) CreateUser(request *userrequest.CreateRequest) error {
+func (this *UserServicesImpl) CreateUser(request *userrequest.CreateRequest) (*domain.User, error) {
+
 	// Check if user is duplicate
 	duplicatedUser, _ := this.UserRepository.FindByName(this.Database, request.Name)
 
 	if len(duplicatedUser.ID) != 0 {
 		// User already exists
-		return &exception.DuplicateEntryError{
+		return nil, &exception.DuplicateEntryError{
 			Message: fmt.Sprintf("%v is already in the database !", request.Name),
 		}
 	}
@@ -51,13 +52,13 @@ func (this *UserServicesImpl) CreateUser(request *userrequest.CreateRequest) err
 	}
 
 	// Insert to db !
-	_, err := this.UserRepository.Create(this.Database, userEntity)
+	created, err := this.UserRepository.Create(this.Database, userEntity)
 
 	if err != nil {
-		return &exception.BadRequestError{
+		return nil, &exception.BadRequestError{
 			Message: err.Error(),
 		}
 	}
 
-	return nil
+	return created, nil
 }
