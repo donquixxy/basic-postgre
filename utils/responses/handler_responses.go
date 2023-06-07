@@ -8,11 +8,20 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
+const (
+	badRequestStatusCode     = 400
+	duplicateEntryStatusCode = 409
+	notFoundStatusCode       = 404
+	serviceErrorStatusCode   = 503
+	succesStatusCode         = 200
+)
+
 func GetReturnData(er error, c echo.Context, data interface{}, errMsg []string) error {
+
 	respons := &responses.Response{}
 
 	if er == nil {
-		respons.StatusCode = 200
+		respons.StatusCode = succesStatusCode
 		respons.Data = data
 		respons.Message = "Success"
 		return c.JSON(respons.StatusCode, respons)
@@ -26,7 +35,7 @@ func GetReturnData(er error, c echo.Context, data interface{}, errMsg []string) 
 				respons.Message = "Bad Request"
 				respons.ErrMsg = errMsg
 				respons.ErrMsg = append(respons.ErrMsg, er.Error())
-				respons.StatusCode = 400
+				respons.StatusCode = badRequestStatusCode
 				return c.JSON(respons.StatusCode, respons)
 			}
 		case *exception.DuplicateEntryError:
@@ -34,7 +43,7 @@ func GetReturnData(er error, c echo.Context, data interface{}, errMsg []string) 
 				respons.Message = "Duplicate Entry"
 				respons.ErrMsg = errMsg
 				respons.ErrMsg = append(respons.ErrMsg, er.Error())
-				respons.StatusCode = 409
+				respons.StatusCode = duplicateEntryStatusCode
 				return c.JSON(respons.StatusCode, respons)
 			}
 		case *exception.RecordNotFoundError:
@@ -42,12 +51,12 @@ func GetReturnData(er error, c echo.Context, data interface{}, errMsg []string) 
 				respons.Message = "Record Not Found"
 				respons.ErrMsg = errMsg
 				respons.ErrMsg = append(respons.ErrMsg, er.Error())
-				respons.StatusCode = 404
+				respons.StatusCode = notFoundStatusCode
 				return c.JSON(respons.StatusCode, respons)
 			}
 		default:
 			{
-				respons.StatusCode = 503
+				respons.StatusCode = serviceErrorStatusCode
 				respons.Message = "Service error"
 				respons.ErrMsg = errMsg
 				respons.ErrMsg = append(respons.ErrMsg, er.Error())

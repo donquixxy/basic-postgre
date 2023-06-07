@@ -1,12 +1,12 @@
 application:
   name: basic-postgres
-  server: development
+  server: local
 database:
   driver: postgres
   username: agusari
   password: 12345678
-  port: 5432
-  address: 172.17.0.2
+  port: 32769
+  address: serene_perlman
   databasename: postgres
   schemas: public
   sslmode: verify-full

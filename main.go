@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -14,12 +15,23 @@ import (
 	"postgre-basic/internal/usecases"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
 
 	appConfig := config.GetConfig()
+	er := godotenv.Load()
+
+	if er != nil {
+		panic(er)
+	}
+
+	env := os.Getenv("ENVIRONMENT")
+
+	fmt.Println("This App is running in the environment :", env)
+	fmt.Println("This App is running in the config :", appConfig.Application.Server)
 
 	db, err := postgre.InitPostgreDb(*appConfig.Database)
 

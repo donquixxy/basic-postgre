@@ -1,0 +1,24 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=agusari
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 7380:8181
+    depends_on:
+      - db
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USER=agusari
+      - DATABASE_PASSWORD=12345678
+      - DATABASE_NAME=postgres
