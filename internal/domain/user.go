@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/fatih/structs"
@@ -22,4 +24,20 @@ func (*User) TableName() string {
 
 func (u *User) ToMap() map[string]interface{} {
 	return structs.Map(u)
+}
+
+func (u *User) MarshalBinary() ([]byte, error) {
+	data, err := json.Marshal(u)
+	if err != nil {
+		fmt.Println("Failed to marshal JSON:", err.Error())
+	}
+	return data, err
+}
+
+func (u *User) UnmarshalBinary(data []byte) error {
+	err := json.Unmarshal(data, u)
+	if err != nil {
+		fmt.Println("Failed to unmarshal JSON:", err.Error())
+	}
+	return err
 }

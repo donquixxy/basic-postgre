@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Company struct {
 	ID        string    `json:"id" gorm:"column:id"`
@@ -12,4 +15,14 @@ type Company struct {
 
 func (*Company) TableName() string {
 	return "company"
+}
+
+func (c *Company) MarshalBinary() ([]byte, error) {
+	data, err := json.Marshal(c)
+
+	return data, err
+}
+
+func (c *Company) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, c)
 }

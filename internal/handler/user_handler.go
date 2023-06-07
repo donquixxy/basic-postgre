@@ -7,6 +7,7 @@ import (
 	"postgre-basic/utils/validator"
 
 	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis/v9"
 )
 
 type UserHandler interface {
@@ -18,14 +19,17 @@ type UserHandler interface {
 }
 
 type UserHandlerImpl struct {
-	Usecases usecases.UserServices
+	Usecases    usecases.UserServices
+	RedisClient *redis.Client
 }
 
 func NewUserHandler(
 	Usecases usecases.UserServices,
+	RedisClient *redis.Client,
 ) UserHandler {
 	return &UserHandlerImpl{
-		Usecases: Usecases,
+		Usecases:    Usecases,
+		RedisClient: RedisClient,
 	}
 }
 
@@ -63,7 +67,7 @@ func (this *UserHandlerImpl) FindAll(c echo.Context) error {
 }
 
 func (this *UserHandlerImpl) Update(c echo.Context) error {
-	id := c.Param("id")
+	id := c.FormValue("id")
 	body, err := userrequest.ReadUpdateRequest(c)
 
 	if err != nil {

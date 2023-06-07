@@ -6,7 +6,7 @@ database:
   username: agusari
   password: 12345678
   port: 32769
-  address: serene_perlman
+  address: localhost
   databasename: postgres
   schemas: public
   sslmode: verify-full

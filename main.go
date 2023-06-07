@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"postgre-basic/config"
 	"postgre-basic/database/postgre"
+	"postgre-basic/database/redis"
 	"postgre-basic/internal/api/routes"
 	"postgre-basic/internal/exception"
 	"postgre-basic/internal/handler"
@@ -34,11 +35,10 @@ func main() {
 	fmt.Println("This App is running in the config :", appConfig.Application.Server)
 
 	db, err := postgre.InitPostgreDb(*appConfig.Database)
-
+	resisClient := redis.NewRedisClient()
 	if err != nil {
 		log.Fatalln("Error opening postgre database !", err.Error())
 	}
-
 	e := echo.New()
 	e.HTTPErrorHandler = exception.ErrorRouteHandler
 	go func() {
@@ -55,12 +55,12 @@ func main() {
 	// End Of Repository Layer
 
 	// Usecases layer
-	userServices := usecases.NewUserServices(db, userRepository)
+	userServices := usecases.NewUserServices(db, userRepository, resisClient)
 	companyServices := usecases.NewCompanyServices(companyRepository, db)
 	// End of Usecase Layer
 
 	// Handler layer
-	userHandler := handler.NewUserHandler(userServices)
+	userHandler := handler.NewUserHandler(userServices, resisClient)
 	companyHandler := handler.NewCompanyHandler(companyServices)
 	// End of Handler Layer
 

@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 	"postgre-basic/internal/api/request/userrequest"
 	"postgre-basic/internal/domain"
@@ -9,6 +10,7 @@ import (
 	"postgre-basic/utils/etc"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -23,15 +25,18 @@ type UserServices interface {
 type UserServicesImpl struct {
 	Database       *gorm.DB
 	UserRepository repository.UserRepository
+	RedisClient    *redis.Client
 }
 
 func NewUserServices(
 	Database *gorm.DB,
 	UserRepository repository.UserRepository,
+	RedisClient *redis.Client,
 ) UserServices {
 	return &UserServicesImpl{
 		Database:       Database,
 		UserRepository: UserRepository,
+		RedisClient:    RedisClient,
 	}
 }
 
@@ -52,8 +57,17 @@ func (this *UserServicesImpl) CreateUser(request *userrequest.CreateRequest) (*d
 		ID:        etc.GenerateRandomUUID(),
 		Name:      request.Name,
 		Age:       request.Age,
+		IDCompany: "15e59302-b227-4c04-8889-a093ebfe1a68",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
+	}
+
+	// Test create to redis !
+	err := this.RedisClient.Set(context.TODO(), userEntity.ID, userEntity, time.Minute*5).Err()
+
+	if err != nil {
+		fmt.Println("Redis client error create data :", err.Error())
+		return nil, err
 	}
 
 	// Insert to db !
@@ -94,6 +108,22 @@ func (this *UserServicesImpl) UpdateUsers(request *userrequest.UpdateRequest, id
 	currentUser.Age = request.Age
 	currentUser.Name = request.Name
 
+	// Delete redis value
+	erro := this.RedisClient.Del(context.TODO(), id).Err()
+
+	if erro != nil {
+		fmt.Println("Error deleting redis value")
+		fmt.Println(erro.Error())
+	}
+
+	// Create new value key redis
+	erro = this.RedisClient.Set(context.TODO(), id, currentUser, time.Minute*5).Err()
+
+	if erro != nil {
+		fmt.Println("Error creating new redis value")
+		fmt.Println(erro.Error())
+	}
+
 	// Update to the db !
 	err = this.UserRepository.Update(this.Database, currentUser)
 
@@ -110,15 +140,49 @@ func (this *UserServicesImpl) UpdateUsers(request *userrequest.UpdateRequest, id
 }
 
 func (this *UserServicesImpl) FindByID(id string) (*domain.User, error) {
-	// Find user by id first
-	currentUser, err := this.UserRepository.FindByID(this.Database, id)
+
+	// Find data at cahce first
+	cachedData, err := this.RedisClient.Get(context.TODO(), id).Result()
+
+	// If not found
+	if err != nil {
+		// Search data at db
+		// Find user by db
+		currentUser, err := this.UserRepository.FindByID(this.Database, id)
+		if err != nil {
+			return nil, &exception.RecordNotFoundError{
+				Message: err.Error(),
+			}
+		}
+
+		// Set data to cache !
+		this.RedisClient.Set(context.TODO(), currentUser.ID, currentUser, time.Minute*5)
+		fmt.Println("Data were found at db")
+		GetAllRedisKeys(this.RedisClient)
+		return currentUser, nil
+	}
+
+	// If found at cache
+	// Unmarshal to object
+	payload := &domain.User{}
+
+	payload.UnmarshalBinary([]byte(cachedData))
+	fmt.Println("Data were found at cache")
+	GetAllRedisKeys(this.RedisClient)
+	return payload, nil
+
+}
+
+func GetAllRedisKeys(c *redis.Client) {
+	listKeys, err := c.Keys(context.TODO(), "*").Result()
 
 	if err != nil {
-		return nil, &exception.RecordNotFoundError{
-			Message: err.Error(),
-		}
+		fmt.Println(err)
 	}
-	return currentUser, nil
+
+	for _, key := range listKeys {
+		fmt.Println(key)
+	}
 }
 
 func (this *UserServicesImpl) Delete(id string) error {
