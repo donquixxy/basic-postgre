@@ -7,8 +7,8 @@ import (
 )
 
 type CreateRequest struct {
-	Name  string `json:"name" form:"name" validate:"required"`
-	Phone string `json:"phone" form:"phone" validate:"required"`
+	Name  string `json:"name" form:"name" validate:"required,min=5,max=20"`
+	Phone string `json:"phone" form:"phone" validate:"required,min=9,max=16,numeric"`
 }
 
 func ReadCreateRequest(c echo.Context) (*CreateRequest, error) {

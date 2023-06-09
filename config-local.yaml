@@ -5,7 +5,7 @@ database:
   driver: postgres
   username: agusari
   password: 12345678
-  port: 32769
+  port: 32768
   address: localhost
   databasename: postgres
   schemas: public

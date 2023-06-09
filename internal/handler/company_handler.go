@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"postgre-basic/internal/api/request/companyrequest"
 	"postgre-basic/internal/usecases"
 	"postgre-basic/utils/responses"
@@ -35,6 +36,7 @@ func (this *CompanyHandlerImpl) Create(c echo.Context) error {
 	validated, err := validator.ValidateStruct(body)
 
 	if err != nil {
+		fmt.Println(err)
 		return responses.GetReturnData(err, c, nil, validated)
 	}
 
