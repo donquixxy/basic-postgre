@@ -6,11 +6,12 @@ services:
       - POSTGRES_USER=agusari
       - POSTGRES_PASSWORD=12345678
       - POSTGRES_DB=postgres
-    volumes:
-      - ./data:/var/lib/postgresql/data
     ports:
       - 32768:5432
-
+  redis:
+    image: redis
+    ports:
+      - 32769:6379
   app:
     build:
       context: .
@@ -19,11 +20,9 @@ services:
       - 7380:8181
     depends_on:
       - db
+      - redis
     environment:
       - DATABASE_HOST=db
       - DATABASE_USER=agusari
       - DATABASE_PASSWORD=12345678
       - DATABASE_NAME=postgres
-      - ENVIRONMENT=local
-    env_file:
-      - .env

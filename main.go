@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -16,24 +15,14 @@ import (
 	"postgre-basic/internal/usecases"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
 
 	appConfig := config.GetConfig()
-	er := godotenv.Load(".env")
 
-	if er != nil {
-		log.Println("err env :", er.Error())
-		panic(er)
-	}
-
-	env := os.Getenv("ENVIRONMENT")
-
-	fmt.Println("This App is running in the environment :", env)
-	fmt.Println("This App is running in the config :", appConfig.Application.Server)
+	log.Println("This App is running in the config :", appConfig.Application.Server)
 
 	db, err := postgre.InitPostgreDb(*appConfig.Database)
 	resisClient := redis.NewRedisClient()

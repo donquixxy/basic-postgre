@@ -32,15 +32,13 @@ WORKDIR /app
 COPY --from=builder /app/myapp .
 
 # Copy the config file into the image
-COPY config.yaml .
-
-COPY config-local.yaml .
+COPY . .
 
 # Expose the necessary port(s)
 EXPOSE 8181
 
 # Set any necessary environment variables
-ENV ENVIRONMENT=development
+ENV ENVIRONMENT=local
 
 # Run the binary
 CMD ["./myapp"]

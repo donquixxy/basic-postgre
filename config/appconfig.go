@@ -2,10 +2,9 @@ package config
 
 import (
 	"fmt"
-	"os"
+	"log"
 	"postgre-basic/database/postgre"
 
-	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -22,25 +21,10 @@ type AppConfiguration struct {
 var conf *AppConfiguration
 
 func GetConfig() *AppConfiguration {
-	er := godotenv.Load()
 
-	if er != nil {
-		panic(er)
-	}
+	conf = InitConfiguration()
 
-	env := os.Getenv("ENVIRONMENT")
-
-	if conf == nil {
-		if env == "local" {
-			conf = InitConfiguration()
-			return conf
-		} else {
-			conf = InitDevConfiguration()
-			return conf
-		}
-	} else {
-		return conf
-	}
+	return conf
 }
 
 func InitDevConfiguration() *AppConfiguration {
@@ -51,7 +35,7 @@ func InitDevConfiguration() *AppConfiguration {
 	err := viper.ReadInConfig()
 
 	if err != nil {
-		fmt.Println("Error reading config", err.Error())
+		log.Println("Error reading config", err.Error())
 		panic(err)
 	}
 
@@ -60,7 +44,7 @@ func InitDevConfiguration() *AppConfiguration {
 	err = viper.Unmarshal(&configApp)
 
 	if err != nil {
-		fmt.Println("Errpr unmarshal config", err.Error())
+		log.Println("Errpr unmarshal config", err.Error())
 		panic(err)
 	}
 
