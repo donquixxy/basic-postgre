@@ -8,6 +8,8 @@ services:
       - POSTGRES_DB=postgres
     volumes:
       - ./data:/var/lib/postgresql/data
+    ports:
+      - 32768:5432
 
   app:
     build:
@@ -22,3 +24,6 @@ services:
       - DATABASE_USER=agusari
       - DATABASE_PASSWORD=12345678
       - DATABASE_NAME=postgres
+      - ENVIRONMENT=local
+    env_file:
+      - .env

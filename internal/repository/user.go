@@ -2,7 +2,6 @@ package repository
 
 import (
 	"postgre-basic/internal/domain"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -13,6 +12,7 @@ type UserRepository interface {
 	FindAll(db *gorm.DB) []*domain.User
 	Update(db *gorm.DB, newValue *domain.User) error
 	FindByID(db *gorm.DB, id string) (*domain.User, error)
+	UpdateZeroAge(db *gorm.DB, newValue *domain.User) error
 	Delete(db *gorm.DB, valueDelete *domain.User) error
 }
 
@@ -45,12 +45,14 @@ func (*UserRepositoryImpl) FindAll(db *gorm.DB) []*domain.User {
 	return ent
 }
 
+func (*UserRepositoryImpl) UpdateZeroAge(db *gorm.DB, newValue *domain.User) error {
+	res := db.Where("id = ?", newValue.ID).Select("age").Updates(newValue)
+
+	return res.Error
+}
+
 func (*UserRepositoryImpl) Update(db *gorm.DB, newValue *domain.User) error {
-	res := db.Where("id = ?", newValue.ID).Updates(domain.User{
-		Name:      newValue.Name,
-		Age:       newValue.Age,
-		UpdatedAt: time.Now(),
-	})
+	res := db.Where("id = ?", newValue.ID).Select("age").Updates(newValue)
 	return res.Error
 }
 

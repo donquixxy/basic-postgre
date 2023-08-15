@@ -125,7 +125,7 @@ func (this *UserServicesImpl) UpdateUsers(request *userrequest.UpdateRequest, id
 	}
 
 	// Update to the db !
-	err = this.UserRepository.Update(this.Database, currentUser)
+	err = this.UserRepository.UpdateZeroAge(this.Database, currentUser)
 
 	if err != nil {
 		return nil, &exception.BadRequestError{

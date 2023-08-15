@@ -23,9 +23,10 @@ import (
 func main() {
 
 	appConfig := config.GetConfig()
-	er := godotenv.Load()
+	er := godotenv.Load(".env")
 
 	if er != nil {
+		log.Println("err env :", er.Error())
 		panic(er)
 	}
 
@@ -41,6 +42,7 @@ func main() {
 	}
 	e := echo.New()
 	e.HTTPErrorHandler = exception.ErrorRouteHandler
+
 	go func() {
 		err := e.Start(":8181")
 

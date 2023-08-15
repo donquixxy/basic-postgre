@@ -9,6 +9,7 @@ import (
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
+// If error is nil. []string is empty. otherwise it has some error message provided from validator
 func ValidateStruct(value interface{}) ([]string, error) {
 	validate := validator.New()
 	var errString string
